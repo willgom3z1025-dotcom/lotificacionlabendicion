@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lotificación La Bendición — Calculadora de Lotes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF7F2;
+  --cream2:#F0EBE1;
+  --ink:#1A1612;
+  --ink2:#4A4038;
+  --gold:#C9963A;
+  --gold-light:#F0D99A;
+  --gold-pale:#FBF5E6;
+  --green:#2D5E3A;
+  --green-light:#E8F2EB;
+  --red:#B83232;
+  --red-light:#FAEAEA;
+  --blue:#1C3F6E;
+  --blue-light:#E6EDF7;
+  --border:#DDD5C8;
+  --shadow:0 2px 12px rgba(26,22,18,0.08);
+  --r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  min-height:100vh;
+  font-size:15px;
+  line-height:1.6;
+}
+
+/* ── Header ── */
+header{
+  background:var(--green);
+  padding:2rem 2rem 0;
+  position:relative;
+  overflow:hidden;
+}
+header::before{
+  content:'';
+  position:absolute;
+  top:-60px;right:-60px;
+  width:260px;height:260px;
+  border:40px solid rgba(201,150,58,0.15);
+  border-radius:50%;
+}
+header::after{
+  content:'';
+  position:absolute;
+  bottom:-30px;left:30%;
+  width:140px;height:140px;
+  border:25px solid rgba(201,150,58,0.10);
+  border-radius:50%;
+}
+.header-inner{max-width:900px;margin:0 auto;position:relative;z-index:1}
+.header-badge{
+  display:inline-block;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gold-light);background:rgba(201,150,58,0.2);
+  border:1px solid rgba(201,150,58,0.3);
+  border-radius:20px;padding:4px 14px;margin-bottom:14px;
+  font-family:'DM Sans',sans-serif;font-weight:500;
+}
+header h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(28px,5vw,42px);
+  color:#fff;font-weight:700;
+  line-height:1.15;margin-bottom:8px;
+}
+header h1 span{color:var(--gold-light)}
+header p{color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:0}
+.header-stats{
+  display:flex;gap:0;
+  margin-top:2rem;
+  border-top:1px solid rgba(255,255,255,0.1);
+}
+.hstat{
+  flex:1;padding:16px 20px;
+  border-right:1px solid rgba(255,255,255,0.1);
+  text-align:center;
+}
+.hstat:last-child{border-right:none}
+.hstat .n{font-size:22px;font-weight:500;color:#fff;font-family:'Playfair Display',serif}
+.hstat .l{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-top:2px}
+
+/* ── Main layout ── */
+main{max-width:900px;margin:0 auto;padding:2rem 1.5rem 4rem}
+
+/* ── Section cards ── */
+.section{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  margin-bottom:1.25rem;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.section-head{
+  background:var(--cream2);
+  border-bottom:1px solid var(--border);
+  padding:14px 20px;
+  display:flex;align-items:center;gap:10px;
+}
+.section-head .ico{
+  width:28px;height:28px;border-radius:6px;
+  background:var(--green);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.section-head .ico svg{width:15px;height:15px;fill:#fff}
+.section-head h2{
+  font-family:'Playfair Display',serif;
+  font-size:16px;font-weight:500;color:var(--ink);
+}
+.section-body{padding:20px}
+
+/* ── Grid helpers ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:640px){
+  .g2,.g3,.g4{grid-template-columns:1fr 1fr}
+  .g4{grid-template-columns:1fr 1fr}
+  header{padding:1.5rem 1rem 0}
+  .header-stats{flex-wrap:wrap}
+  .hstat{min-width:50%;border-right:none;border-bottom:1px solid rgba(255,255,255,0.1)}
+}
+@media(max-width:420px){
+  .g2,.g3,.g4{grid-template-columns:1fr}
+}
+
+/* ── Form fields ── */
+label{
+  font-size:12px;letter-spacing:0.5px;text-transform:uppercase;
+  color:var(--ink2);font-weight:500;
+  display:block;margin-bottom:6px;
+}
+select,input[type="number"]{
+  width:100%;height:40px;
+  border:1.5px solid var(--border);
+  border-radius:8px;
+  padding:0 12px;
+  font-size:14px;
+  font-family:'DM Sans',sans-serif;
+  background:#fff;color:var(--ink);
+  transition:border-color 0.2s;
+  appearance:none;
+  -webkit-appearance:none;
+}
+select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234A4038' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 12px center;
+  padding-right:36px;
+}
+select:focus,input[type="number"]:focus{
+  outline:none;border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(45,94,58,0.1);
+}
+input[type="range"]{
+  width:100%;height:4px;
+  -webkit-appearance:none;appearance:none;
+  background:var(--border);border-radius:2px;
+  cursor:pointer;outline:none;
+}
+input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:20px;height:20px;border-radius:50%;
+  background:var(--green);border:3px solid #fff;
+  box-shadow:0 1px 4px rgba(0,0,0,0.2);
+  cursor:pointer;
+}
+input[type="range"]::-moz-range-thumb{
+  width:20px;height:20px;border-radius:50%;
+  background:var(--green);border:3px solid #fff;
+  box-shadow:0 1px 4px rgba(0,0,0,0.2);
+  cursor:pointer;border:none;
+}
+.field{margin-bottom:4px}
+
+/* ── Info pills ── */
+.pill{
+  display:inline-block;font-size:11px;padding:2px 9px;
+  border-radius:20px;font-weight:500;margin-left:6px;
+  letter-spacing:0.3px;
+}
+.pill-gold{background:var(--gold-pale);color:#7A5A10;border:1px solid var(--gold-light)}
+.pill-green{background:var(--green-light);color:var(--green)}
+
+/* ── Metric cards ── */
+.metric{
+  background:var(--cream);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:14px 16px;
+  text-align:center;
+}
+.metric .m-label{font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:var(--ink2);margin-bottom:6px}
+.metric .m-val{font-size:20px;font-weight:500;color:var(--ink);font-family:'Playfair Display',serif;line-height:1.2}
+.metric .m-sub{font-size:11px;color:var(--ink2);margin-top:3px}
+.metric.hi{background:var(--green-light);border-color:#B3D4BC}
+.metric.hi .m-val{color:var(--green)}
+.metric.warn{background:#FFFBF0;border-color:#E8D68A}
+.metric.warn .m-val{color:#7A5A10}
+.metric.danger{background:var(--red-light);border-color:#E8B4B4}
+.metric.danger .m-val{color:var(--red)}
+.metric.blue{background:var(--blue-light);border-color:#B3C8E8}
+.metric.blue .m-val{color:var(--blue)}
+.metric.gold{background:var(--gold-pale);border-color:var(--gold-light)}
+.metric.gold .m-val{color:var(--gold)}
+
+/* ── Lote info bar ── */
+.lote-info{
+  display:flex;gap:8px;flex-wrap:wrap;
+  background:var(--green-light);
+  border:1px solid #B3D4BC;
+  border-radius:8px;
+  padding:12px 16px;
+  margin-bottom:16px;
+}
+.lote-info .li-item{display:flex;flex-direction:column;gap:2px;min-width:80px}
+.lote-info .li-label{font-size:10px;letter-spacing:0.5px;text-transform:uppercase;color:var(--green);font-weight:500}
+.lote-info .li-val{font-size:15px;font-weight:500;color:var(--ink)}
+
+/* ── Plazo buttons ── */
+.plazo-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.plazo-btn{
+  font-size:12px;padding:5px 13px;
+  border:1.5px solid var(--border);border-radius:20px;
+  background:#fff;color:var(--ink2);cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-weight:400;
+  transition:all 0.15s;
+}
+.plazo-btn:hover{border-color:var(--green);color:var(--green)}
+.plazo-btn.active{background:var(--green);border-color:var(--green);color:#fff;font-weight:500}
+
+/* ── Comparativo table ── */
+.comp-table{width:100%;border-collapse:collapse;font-size:13px}
+.comp-table th{
+  padding:9px 12px;text-align:right;
+  font-weight:500;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;
+  color:var(--ink2);border-bottom:1.5px solid var(--border);
+  background:var(--cream2);
+}
+.comp-table th:first-child{text-align:left;border-radius:8px 0 0 0}
+.comp-table td{
+  padding:9px 12px;text-align:right;
+  border-bottom:1px solid var(--cream2);
+  color:var(--ink);
+}
+.comp-table td:first-child{text-align:left;font-weight:500}
+.comp-table tr.active-row td{background:var(--green-light)}
+.comp-table tr.active-row td:first-child{color:var(--green);position:relative}
+.comp-table tr.active-row td:first-child::before{content:'→ ';color:var(--green)}
+.comp-table tr:last-child td{border-bottom:none}
+.comp-table .td-cuota{color:var(--green);font-weight:500}
+.comp-table .td-int{color:var(--red)}
+
+/* ── Amortización ── */
+.toggle-btn{
+  font-size:12px;color:var(--green);
+  background:none;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-weight:500;
+  padding:0;text-decoration:underline;text-underline-offset:2px;
+}
+.amort-wrap{overflow-x:auto;margin-top:12px}
+.amort-table{width:100%;border-collapse:collapse;font-size:12px}
+.amort-table th{
+  padding:8px 10px;text-align:right;
+  font-weight:500;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;
+  color:var(--ink2);border-bottom:1px solid var(--border);
+  background:var(--cream2);
+}
+.amort-table th:first-child{text-align:center}
+.amort-table td{
+  padding:7px 10px;text-align:right;
+  border-bottom:1px solid var(--cream2);
+  color:var(--ink);
+}
+.amort-table td:first-child{text-align:center;color:var(--ink2)}
+.amort-table tr:nth-child(even) td{background:rgba(250,247,242,0.5)}
+.amort-table .td-int{color:var(--red)}
+.amort-table .td-cap{color:var(--green)}
+
+/* ── Fiscal section ── */
+.fiscal-note{
+  background:var(--gold-pale);border:1px solid var(--gold-light);
+  border-radius:8px;padding:14px 16px;margin-top:16px;
+  font-size:13px;color:#5A3F08;line-height:1.6;
+}
+.fiscal-note strong{font-weight:500}
+
+/* ── Footer ── */
+footer{
+  text-align:center;padding:2rem;
+  font-size:12px;color:var(--ink2);
+  border-top:1px solid var(--border);
+  background:var(--cream2);
+}
+footer span{color:var(--green);font-weight:500}
+
+/* ── Divider ── */
+.divider{border:none;border-top:1px solid var(--border);margin:18px 0}
+
+/* ── Plazo label ── */
+.plazo-label{
+  font-size:14px;font-weight:500;color:var(--green);
+  margin-bottom:10px;display:block;
+}
+.range-wrap{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.range-wrap span{font-size:12px;color:var(--ink2);min-width:36px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-badge">San Miguel, El Salvador</div>
+    <h1>Lotificación<br><span>"La Bendición"</span></h1>
+    <p>Calculadora oficial de precios y cuotas de financiamiento</p>
+    <div class="header-stats">
+      <div class="hstat"><div class="n">236</div><div class="l">Lotes disponibles</div></div>
+      <div class="hstat"><div class="n">11</div><div class="l">Polígonos</div></div>
+      <div class="hstat"><div class="n">71,782</div><div class="l">m² totales</div></div>
+      <div class="hstat"><div class="n">12%</div><div class="l">Tasa anual</div></div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- SELECCIÓN DE LOTE -->
+  <div class="section">
+    <div class="section-head">
+      <div class="ico">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      </div>
+      <h2>Selección de Lote</h2>
+    </div>
+    <div class="section-body">
+      <div class="g2" style="margin-bottom:16px">
+        <div class="field">
+          <label>Polígono</label>
+          <select id="sel-pol" onchange="updateLotes()">
+            <option value="1">Polígono 1 — 24 lotes</option>
+            <option value="2">Polígono 2 — 26 lotes</option>
+            <option value="3">Polígono 3 — 20 lotes</option>
+            <option value="4">Polígono 4 — 20 lotes</option>
+            <option value="5">Polígono 5 — 18 lotes</option>
+            <option value="6">Polígono 6 — 11 lotes</option>
+            <option value="7">Polígono 7 — 17 lotes</option>
+            <option value="8">Polígono 8 — 21 lotes</option>
+            <option value="9">Polígono 9 — 7 lotes</option>
+            <option value="10">Polígono 10 — 35 lotes</option>
+            <option value="11">Polígono 11 — 40 lotes</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Número de lote</label>
+          <select id="sel-lote" onchange="recalc()"></select>
+        </div>
+      </div>
+      <div id="lote-info-bar" class="lote-info">
+        <div class="li-item"><div class="li-label">Área m²</div><div class="li-val" id="li-m2">—</div></div>
+        <div class="li-item"><div class="li-label">Área v²</div><div class="li-val" id="li-v2">—</div></div>
+        <div class="li-item"><div class="li-label">Precio base /v²</div><div class="li-val" id="li-pv2">—</div></div>
+        <div class="li-item"><div class="li-label">Precio base total</div><div class="li-val" id="li-ptotal">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRECIO -->
+  <div class="section">
+    <div class="section-head">
+      <div class="ico">
+        <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+      </div>
+      <h2>Precio del Lote <span class="pill pill-gold">editable</span></h2>
+    </div>
+    <div class="section-body">
+      <div class="g2" style="margin-bottom:14px">
+        <div class="field">
+          <label>Precio por v² acordado ($)</label>
+          <input type="number" id="inp-pv2" min="1" step="0.5" oninput="recalc()">
+        </div>
+        <div>
+          <label>Precio total del lote</label>
+          <div class="metric hi">
+            <div class="m-val" id="res-ptotal">—</div>
+            <div class="m-sub">precio base sin IVA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINANCIAMIENTO -->
+  <div class="section">
+    <div class="section-head">
+      <div class="ico">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+      </div>
+      <h2>Condiciones de Financiamiento</h2>
+    </div>
+    <div class="section-body">
+      <div class="g3" style="margin-bottom:18px">
+        <div class="field">
+          <label>Prima del cliente ($) <span class="pill pill-gold">por cliente</span></label>
+          <input type="number" id="inp-prima" min="0" step="100" value="5000" oninput="recalc()">
+        </div>
+        <div class="field">
+          <label>Tasa de interés anual (%)</label>
+          <input type="number" id="inp-tasa" min="1" max="36" step="0.25" value="12" oninput="recalc()">
+        </div>
+        <div>
+          <label>Prima como % del precio</label>
+          <div class="metric" id="prima-metric">
+            <div class="m-val" id="res-prima-pct">—</div>
+            <div class="m-sub" id="res-prima-tag">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="plazo-label" id="lbl-plazo">Plazo: 60 meses (5 años)</span>
+        <div class="range-wrap">
+          <span>12 m</span>
+          <input type="range" id="rng-plazo" min="12" max="120" step="6" value="60" oninput="updatePlazo()">
+          <span>120 m</span>
+        </div>
+        <div class="plazo-btns">
+          <button class="plazo-btn" onclick="setPlazo(24)">24 m</button>
+          <button class="plazo-btn" onclick="setPlazo(36)">36 m</button>
+          <button class="plazo-btn" onclick="setPlazo(48)">48 m</button>
+          <button class="plazo-btn active" onclick="setPlazo(60)">60 m</button>
+          <button class="plazo-btn" onclick="setPlazo(72)">72 m</button>
+          <button class="plazo-btn" onclick="setPlazo(84)">84 m</button>
+          <button class="plazo-btn" onclick="setPlazo(96)">96 m</button>
+          <button class="plazo-btn" onclick="setPlazo(120)">120 m</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESUMEN CLIENTE -->
+  <div class="section">
+    <div class="section-head">
+      <div class="ico">
+        <svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+      </div>
+      <h2>Resumen para el Cliente</h2>
+    </div>
+    <div class="section-body">
+      <div class="g4" style="margin-bottom:14px">
+        <div class="metric hi">
+          <div class="m-label">Precio total</div>
+          <div class="m-val" id="s-total">—</div>
+        </div>
+        <div class="metric warn">
+          <div class="m-label">Prima inicial</div>
+          <div class="m-val" id="s-prima">—</div>
+        </div>
+        <div class="metric">
+          <div class="m-label">Saldo a financiar</div>
+          <div class="m-val" id="s-saldo">—</div>
+        </div>
+        <div class="metric hi" style="border-width:2px;border-color:#2D5E3A">
+          <div class="m-label">Cuota mensual</div>
+          <div class="m-val" id="s-cuota" style="font-size:24px">—</div>
+          <div class="m-sub" id="s-cuota-sub">—</div>
+        </div>
+      </div>
+      <div class="g3">
+        <div class="metric blue">
+          <div class="m-label">Total a pagar</div>
+          <div class="m-val" id="s-total-pagar">—</div>
+          <div class="m-sub">(prima + cuotas)</div>
+        </div>
+        <div class="metric danger">
+          <div class="m-label">Total en intereses</div>
+          <div class="m-val" id="s-intereses">—</div>
+        </div>
+        <div class="metric gold">
+          <div class="m-label">Costo financiero</div>
+          <div class="m-val" id="s-costo-fin">—</div>
+          <div class="m-sub">sobre el saldo</div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <p style="font-size:12px;letter-spacing:0.5px;text-transform:uppercase;color:var(--ink2);font-weight:500;margin-bottom:12px">Obligaciones Fiscales Estimadas</p>
+      <div class="g3">
+        <div class="metric">
+          <div class="m-label">IVA 13%</div>
+          <div class="m-val" id="s-iva">—</div>
+          <div class="m-sub">débito fiscal</div>
+        </div>
+        <div class="metric">
+          <div class="m-label">Pago a Cuenta 1.75%</div>
+          <div class="m-val" id="s-pac">—</div>
+          <div class="m-sub">anticipo renta</div>
+        </div>
+        <div class="metric">
+          <div class="m-label">Precio total + IVA</div>
+          <div class="m-val" id="s-total-iva">—</div>
+          <div class="m-sub">si aplica IVA</div>
+        </div>
+      </div>
+      <div class="fiscal-note">
+        <strong>Nota fiscal:</strong> La transferencia de inmuebles sin construcción puede estar <strong>exenta de IVA</strong> según el Art. 46 lit. b) de la Ley del IVA de El Salvador. El Pago a Cuenta (1.75%) aplica siempre sobre ingresos brutos. Consulte con su contador para confirmar el tratamiento aplicable a su operación.
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARATIVO DE PLAZOS -->
+  <div class="section">
+    <div class="section-head">
+      <div class="ico">
+        <svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+      </div>
+      <h2>Comparativo de Plazos</h2>
+    </div>
+    <div class="section-body" style="overflow-x:auto">
+      <table class="comp-table" id="comp-table">
+        <thead><tr>
+          <th>Plazo</th>
+          <th>Cuota/mes</th>
+          <th>Total a pagar</th>
+          <th>Total intereses</th>
+          <th>Costo financiero</th>
+        </tr></thead>
+        <tbody id="comp-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- AMORTIZACIÓN -->
+  <div class="section">
+    <div class="section-head">
+      <div class="ico">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+      </div>
+      <h2>Tabla de Amortización</h2>
+    </div>
+    <div class="section-body">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <p style="font-size:13px;color:var(--ink2)">Desglose mes a mes de interés y capital</p>
+        <button class="toggle-btn" id="toggle-btn" onclick="toggleAmort()">Ver primeros 12 meses ▼</button>
+      </div>
+      <div id="amort-wrap" class="amort-wrap" style="display:none">
+        <table class="amort-table">
+          <thead><tr>
+            <th style="text-align:center">#</th>
+            <th>Saldo inicial</th>
+            <th>Cuota</th>
+            <th>Interés</th>
+            <th>Capital</th>
+            <th>Saldo final</th>
+            <th>% pagado</th>
+          </tr></thead>
+          <tbody id="amort-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>Lotificación <span>"La Bendición"</span> · San Miguel, El Salvador · Calculadora de Lotes</p>
+  <p style="margin-top:4px;font-size:11px">Los valores son referenciales. Sujeto a confirmación con el equipo de ventas.</p>
+</footer>
+
+<script>
+const LOTES={
+  1:[[1,200.71,287.18],[2,207.89,297.44],...Array.from({length:21},(_,i)=>[i+3,200.00,286.17]),[24,207.41,296.77]],
+  2:[[1,200.07,297.71],[2,200.07,297.71],...Array.from({length:10},(_,i)=>[i+3,200.00,286.17]),[13,238.89,341.81],[14,252.65,361.50],[15,243.07,347.79],[16,231.95,331.88],...Array.from({length:10},(_,i)=>[i+17,200.00,286.17])],
+  3:[[1,213.75,305.78],...Array.from({length:7},(_,i)=>[i+2,200.00,286.17]),[9,208.07,297.71],[10,208.07,297.71],...Array.from({length:7},(_,i)=>[i+11,200.00,286.17]),[18,213.75,305.78],[19,213.75,305.78],[20,213.75,305.78]],
+  4:[[1,219.07,313.45],[2,219.07,313.45],...Array.from({length:7},(_,i)=>[i+3,200.00,286.17]),[10,200.98,287.57],[11,200.93,287.50],[12,230.54,329.80],[13,241.60,345.69],...Array.from({length:7},(_,i)=>[i+14,200.00,286.17])],
+  5:[[1,200.69,297.25],...Array.from({length:7},(_,i)=>[i+2,200.00,286.17]),[9,213.07,304.87],[10,213.07,304.87],...Array.from({length:7},(_,i)=>[i+11,200.00,286.17]),[18,239.04,342.03]],
+  6:[[1,200.73,287.21],[2,200.98,287.57],[3,200.98,287.57],[4,200.98,287.17],[5,200.93,287.58],[6,230.54,329.86],[7,241.60,345.69],[8,200.00,286.17],[9,200.00,286.17],[10,200.73,287.21],[11,200.73,287.21]],
+  7:[[1,219.16,313.58],...Array.from({length:6},(_,i)=>[i+2,200.00,286.17]),[8,209.07,298.07],[9,209.07,298.07],...Array.from({length:6},(_,i)=>[i+10,200.00,286.17]),[16,219.16,313.58],[17,219.16,313.58]],
+  8:[...Array.from({length:10},(_,i)=>[i+1,200.00,286.17]),[11,238.35,341.04],...Array.from({length:8},(_,i)=>[i+12,200.00,286.17]),[20,200.06,286.27],[21,200.07,286.27]],
+  9:[[1,200.81,293.23],[2,200.81,293.23],[3,204.36,292.46],[4,204.36,292.46],[5,200.00,286.17],[6,200.00,286.17],[7,225.77,315.88]],
+  10:[[1,215.61,308.50],[2,230.33,329.42],...Array.from({length:30},(_,i)=>[i+3,200.00,286.17]),[33,225.00,321.94],[34,301.94,503.42],[35,215.61,308.50]],
+  11:[[1,200.00,286.17],[2,247.52,354.16],...Array.from({length:30},(_,i)=>[i+3,200.00,286.17]),[33,305.49,444.26],...Array.from({length:6},(_,i)=>[i+34,200.00,286.17]),[40,372.62,533.16]]
+};
+const BASE={1:113,2:113,3:113,4:113,5:113,6:113,7:113,8:113,9:113,10:113,11:113};
+
+function D(id){return document.getElementById(id)}
+function fmt(n){return'$'+Math.round(n).toLocaleString('es-SV')}
+function fmt2(n){return'$'+(+n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')}
+function pct(n){return n.toFixed(1)+'%'}
+
+let showAmort=false;
+
+function updateLotes(){
+  const pol=+D('sel-pol').value;
+  const sel=D('sel-lote');
+  sel.innerHTML='';
+  (LOTES[pol]||[]).forEach(([num,m2,v2])=>{
+    const o=document.createElement('option');
+    o.value=num;
+    o.textContent=`Lote ${num}  —  ${m2.toFixed(0)} m² / ${v2.toFixed(0)} v²`;
+    sel.appendChild(o);
+  });
+  D('inp-pv2').value=BASE[pol];
+  recalc();
+}
+
+function getLote(){
+  const pol=+D('sel-pol').value;
+  const num=+D('sel-lote').value;
+  return (LOTES[pol]||[]).find(([n])=>n===num)||null;
+}
+
+function pmtCalc(P,r,n){
+  if(r===0) return P/n;
+  return P*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+}
+
+function recalc(){
+  const data=getLote(); if(!data) return;
+  const pol=+D('sel-pol').value;
+  const [,m2,v2]=data;
+  const pv2=+D('inp-pv2').value||0;
+  const prima=+D('inp-prima').value||0;
+  const tasa=+D('inp-tasa').value||12;
+  const plazo=+D('rng-plazo').value||60;
+
+  const total=v2*pv2;
+  const saldo=Math.max(total-prima,0);
+  const r=tasa/100/12;
+  const cuota=saldo>0&&plazo>0?pmtCalc(saldo,r,plazo):0;
+  const totalPagar=cuota*plazo+prima;
+  const totalInt=cuota*plazo-saldo;
+  const costoFin=saldo>0?(totalInt/saldo*100):0;
+  const primaP=total>0?(prima/total*100):0;
+  const iva=total*0.13;
+  const pac=total*0.0175;
+
+  // Info bar
+  D('li-m2').textContent=m2.toFixed(2);
+  D('li-v2').textContent=v2.toFixed(2);
+  D('li-pv2').textContent='$'+BASE[pol].toFixed(2)+'/v²';
+  D('li-ptotal').textContent=fmt(v2*BASE[pol]);
+
+  // Resumen
+  D('s-total').textContent=fmt(total);
+  D('s-prima').textContent=fmt(prima);
+  D('s-saldo').textContent=fmt(saldo);
+  D('s-cuota').textContent=fmt(cuota);
+  D('s-cuota-sub').textContent=plazo+' meses';
+  D('s-total-pagar').textContent=fmt(totalPagar);
+  D('s-intereses').textContent=fmt(totalInt);
+  D('s-costo-fin').textContent=pct(costoFin);
+  D('s-iva').textContent=fmt(iva);
+  D('s-pac').textContent=fmt(pac);
+  D('s-total-iva').textContent=fmt(total+iva);
+
+  // Prima metric
+  D('res-prima-pct').textContent=pct(primaP);
+  const pm=D('prima-metric');
+  if(primaP<15){pm.className='metric danger';D('res-prima-tag').textContent='Prima baja'}
+  else if(primaP<20){pm.className='metric warn';D('res-prima-tag').textContent='Prima mínima sugerida'}
+  else{pm.className='metric hi';D('res-prima-tag').textContent='Prima adecuada'}
+
+  // Comparativo
+  buildComp(saldo,prima,tasa,plazo);
+  if(showAmort) buildAmort(saldo,cuota,r,plazo);
+}
+
+function buildComp(saldo,prima,tasa,selPlazo){
+  const plazos=[24,36,48,60,72,84,96,120];
+  const r=tasa/100/12;
+  let html='';
+  plazos.forEach(p=>{
+    const cuota=saldo>0?pmtCalc(saldo,r,p):0;
+    const tp=cuota*p+prima;
+    const ti=cuota*p-saldo;
+    const cf=saldo>0?(ti/saldo*100):0;
+    const act=p===selPlazo;
+    html+=`<tr class="${act?'active-row':''}">
+      <td>${p} meses ${act?'':''}${p>=12?' ('+Math.round(p/12*10)/10+' años)':''}</td>
+      <td class="td-cuota">${fmt2(cuota)}</td>
+      <td>${fmt(tp)}</td>
+      <td class="td-int">${fmt(ti)}</td>
+      <td>${pct(cf)}</td>
+    </tr>`;
+  });
+  D('comp-body').innerHTML=html;
+}
+
+function buildAmort(saldo,cuota,r,plazo){
+  let bal=saldo;
+  let html='';
+  const rows=Math.min(plazo,12);
+  for(let i=1;i<=rows;i++){
+    const interest=bal*r;
+    const capital=cuota-interest;
+    const newBal=Math.max(bal-capital,0);
+    const paidPct=((saldo-newBal)/saldo*100).toFixed(1);
+    html+=`<tr>
+      <td>${i}</td>
+      <td>${fmt2(bal)}</td>
+      <td>${fmt2(cuota)}</td>
+      <td class="td-int">${fmt2(interest)}</td>
+      <td class="td-cap">${fmt2(capital)}</td>
+      <td>${fmt2(newBal)}</td>
+      <td>${paidPct}%</td>
+    </tr>`;
+    bal=newBal;
+  }
+  if(plazo>12) html+=`<tr><td colspan="7" style="text-align:center;color:var(--ink2);padding:10px;font-style:italic;font-size:12px">… ${plazo-12} cuotas más hasta completar el plazo</td></tr>`;
+  D('amort-body').innerHTML=html;
+}
+
+function updatePlazo(){
+  const v=+D('rng-plazo').value;
+  const y=Math.round(v/12*10)/10;
+  D('lbl-plazo').textContent=`Plazo: ${v} meses (${y} ${y===1?'año':'años'})`;
+  document.querySelectorAll('.plazo-btn').forEach(b=>{
+    b.classList.toggle('active',+b.textContent.replace(' m','')==v);
+  });
+  recalc();
+}
+
+function setPlazo(v){
+  D('rng-plazo').value=v;
+  updatePlazo();
+}
+
+function toggleAmort(){
+  showAmort=!showAmort;
+  D('amort-wrap').style.display=showAmort?'block':'none';
+  D('toggle-btn').textContent=showAmort?'Ocultar ▲':'Ver primeros 12 meses ▼';
+  if(showAmort){
+    const data=getLote(); if(!data) return;
+    const [,m2,v2]=data;
+    const total=v2*(+D('inp-pv2').value||0);
+    const prima=+D('inp-prima').value||0;
+    const saldo=Math.max(total-prima,0);
+    const tasa=+D('inp-tasa').value||12;
+    const plazo=+D('rng-plazo').value||60;
+    const r=tasa/100/12;
+    const cuota=pmtCalc(saldo,r,plazo);
+    buildAmort(saldo,cuota,r,plazo);
+  }
+}
+
+updateLotes();
+</script>
+</body>
+</html>
